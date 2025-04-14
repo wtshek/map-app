@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+The techstack
+
+- NextJS
+- Typescript
+- Shadcn + TailwindCSS
+- Firebase
+- Jest + React Testing Library
+- Package Manager: Yarn
