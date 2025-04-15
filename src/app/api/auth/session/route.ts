@@ -19,8 +19,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Token expired" }, { status: 401 });
     }
 
+    // Create a session cookie instead of using the ID token directly
+    const sessionCookie = await adminAuth.createSessionCookie(idToken, {
+      expiresIn: SESSION_COOKIE_OPTIONS.maxAge * 1000, // Convert to milliseconds
+    });
+
     const response = NextResponse.json({ success: true });
-    response.cookies.set(SESSION_COOKIE_NAME, idToken, SESSION_COOKIE_OPTIONS);
+    response.cookies.set(SESSION_COOKIE_NAME, sessionCookie, SESSION_COOKIE_OPTIONS);
     return response;
   } catch (error) {
     console.error("Error setting session cookie:", error);

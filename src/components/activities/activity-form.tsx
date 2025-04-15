@@ -13,6 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,29 +35,24 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { ACTIVITY_CATEGORIES } from "@/lib/constants/activity";
 import { toast } from "sonner";
+import { TimePicker } from "@/components/ui/time-picker"
+import { PATH } from "@/lib/constants/path";
+import { CreateActivityInput, ActivityCategory } from "@/lib/types/activity";
 
 const formSchema = z.object({
-  title: z.string().min(1, "Title is required").max(100),
-  description: z.string().min(1, "Description is required").max(500),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
   dateTime: z.date({
     required_error: "Date and time is required",
   }),
   location: z.object({
-    address: z.string().min(1, "Location is required"),
+    address: z.string().min(1, "Address is required"),
     coordinates: z.object({
       lat: z.number(),
       lng: z.number(),
     }),
   }),
-  category: z.enum([
-    "sports",
-    "social",
-    "education",
-    "entertainment",
-    "food",
-    "travel",
-    "other",
-  ]),
+  category: z.string().min(1, "Category is required"),
 });
 
 export function ActivityForm() {
@@ -101,12 +97,33 @@ export function ActivityForm() {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
-      // TODO: Implement API call to create activity
-      console.log("Form submitted:", data);
+      const createActivityInput: CreateActivityInput = {
+        name: data.title,
+        description: data.description,
+        locationName: data.location.address,
+        coordinates: data.location.coordinates,
+        category: data.category as ActivityCategory,
+        date: data.dateTime.toISOString(),
+        maxParticipants: 10, // Default value, could be made configurable
+        isPublic: true, // Default value, could be made configurable
+      };
+
+      const response = await fetch(PATH.API.ACTIVITIES.BASE(), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(createActivityInput),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create activity");
+      }
 
       toast.success("Activity created successfully");
       router.back();
     } catch (error) {
+      console.error("Error creating activity:", error);
       toast.error("Failed to create activity");
     }
   };
@@ -152,34 +169,60 @@ export function ActivityForm() {
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Date and Time</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP p")
-                      ) : (
-                        <span>Pick a date and time</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <div className="flex gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP p")
+                        ) : (
+                          <span>Pick a date and time</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <div className="flex flex-col gap-4 p-4">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={(date) => {
+                          if (date) {
+                            const newDate = field.value ? new Date(field.value) : new Date()
+                            newDate.setFullYear(date.getFullYear())
+                            newDate.setMonth(date.getMonth())
+                            newDate.setDate(date.getDate())
+                            field.onChange(newDate)
+                          }
+                        }}
+                        initialFocus
+                      />
+                      <div className="border-t pt-4">
+                        <TimePicker
+                          value={field.value}
+                          onChange={(time) => {
+                            const newDate = field.value ? new Date(field.value) : new Date()
+                            newDate.setHours(time.getHours())
+                            newDate.setMinutes(time.getMinutes())
+                            field.onChange(newDate)
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <FormDescription>
+                When will the activity take place?
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

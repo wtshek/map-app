@@ -28,3 +28,52 @@ export interface Activity extends ActivityFormData {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
+export interface Activity {
+  id: string;
+  name: string;
+  description: string;
+  locationName: string;
+  coordinates: Coordinates;
+  category: ActivityCategory;
+  date: string;
+  maxParticipants: number;
+  isPublic: boolean;
+  userId: string;
+  participantIds: string[];
+  createdAt: Date;
+  lastEditAt: string;
+}
+
+export interface CreateActivityInput {
+  name: string;
+  description: string;
+  locationName: string;
+  coordinates: Coordinates;
+  category: ActivityCategory;
+  date: string;
+  maxParticipants: number;
+  isPublic: boolean;
+}
+
+export interface UpdateActivityInput {
+  name?: string;
+  description?: string;
+  locationName?: string;
+  coordinates?: Coordinates;
+  category?: ActivityCategory;
+  date?: string;
+  maxParticipants?: number;
+  isPublic?: boolean;
+}
+
+export interface ActivityResponse {
+  status: number;
+  message: string;
+  data: Activity | Activity[] | null;
+}
