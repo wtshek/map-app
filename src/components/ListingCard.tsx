@@ -1,96 +1,100 @@
 "use client";
 
-import Image from "next/image";
-import { Heart } from "lucide-react";
-import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { cn } from "@/lib/utils";
+import { Activity, ActivityCategory } from "@/lib/types/activity";
 
 interface ListingCardProps {
-  id: number;
-  title: string;
-  host: string;
-  hostingYears: number;
-  description: string;
-  price: number;
-  currency: string;
-  rating: number;
-  reviews: number;
-  images: string[];
-  isFavorite: boolean;
+  activity: Activity;
   isHovered?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 }
 
+// Helper function to get category icon or color
+const getCategoryInfo = (category: ActivityCategory) => {
+  return (
+    {
+      sports: {
+        emoji: "🏃‍♂️",
+        label: "Sports",
+      },
+      social: {
+        emoji: "👥",
+        label: "Social",
+      },
+      education: {
+        emoji: "📚",
+        label: "Education",
+      },
+      entertainment: {
+        emoji: "🎭",
+        label: "Entertainment",
+      },
+      food: {
+        emoji: "🍽️",
+        label: "Food",
+      },
+      travel: {
+        emoji: "✈️",
+        label: "Travel",
+      },
+      other: {
+        emoji: "📌",
+        label: "Other",
+      },
+    }[category] || { emoji: "📌", label: "Activity" }
+  );
+};
+
 export function ListingCard({
-  title,
-  host,
-  hostingYears,
-  description,
-  price,
-  currency,
-  rating,
-  reviews,
-  images,
-  isFavorite,
+  activity,
   isHovered,
   onMouseEnter,
   onMouseLeave,
 }: ListingCardProps) {
+  const { emoji, label } = getCategoryInfo(activity.category);
+
+  // Format date
+  const date = new Date(activity.date);
+  const formattedDate = date.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   return (
     <Card
       className={cn(
-        "group relative border-0 space-y-4 transition-all duration-200",
-        isHovered && "ring-2 ring-primary shadow-lg"
+        "group relative border-0 space-y-4 transition-all duration-300 p-4",
+        isHovered && "hovered"
       )}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Image carousel */}
-      <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
-        <div className="absolute right-4 top-4 z-10">
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "rounded-full bg-white/80 backdrop-blur-sm hover:bg-white/90",
-              isFavorite && "text-red-600"
-            )}
-          >
-            <Heart
-              className="h-5 w-5"
-              fill={isFavorite ? "currentColor" : "none"}
-            />
-          </Button>
+      <div className="space-y-2">
+        <div className="flex justify-between items-start">
+          <h3 className="font-semibold text-lg">{activity.name}</h3>
+          <span className="text-2xl" title={label}>
+            {emoji}
+          </span>
         </div>
-        {/* <Image
-          src={images[0]}
-          alt={title}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        /> */}
-        {/* Image navigation dots would go here */}
-      </div>
 
-      {/* Listing details */}
-      <div className="space-y-2 px-1">
-        <div className="flex justify-between">
-          <h3 className="font-semibold">{title}</h3>
-          <div className="flex items-center gap-1">
-            <span>★</span>
-            <span>{rating}</span>
-            <span className="text-gray-500">({reviews})</span>
+        <p className="text-sm text-muted-foreground">{activity.locationName}</p>
+        <p className="text-sm">{activity.description}</p>
+
+        <div className="flex justify-between items-center text-sm pt-2">
+          <div>
+            <span className="font-medium">{formattedDate}</span>
+          </div>
+          <div>
+            <span className="bg-muted px-2 py-1 rounded-full text-xs">
+              {activity.maxParticipants} participants max
+            </span>
           </div>
         </div>
-        <p className="text-gray-500">
-          Stay with {host} · Hosting for {hostingYears} years
-        </p>
-        <p className="text-gray-500">{description}</p>
-        <p className="font-semibold">
-          {currency} {price} <span className="font-normal">night</span>
-        </p>
       </div>
     </Card>
   );

@@ -1,4 +1,5 @@
 import { SignUpForm } from "@/components/auth/sign-up-form";
+import { PATH } from "@/lib/constants/path";
 import Link from "next/link";
 
 export default function SignUpPage() {
@@ -10,7 +11,7 @@ export default function SignUpPage() {
           <p className="mt-2 text-sm text-gray-600">
             Already have an account?{" "}
             <Link
-              href="/sign-in"
+              href={PATH.SIGN_IN}
               className="font-medium text-blue-600 hover:text-blue-500"
             >
               Sign in

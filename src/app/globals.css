@@ -54,57 +54,57 @@
 
     --card: rgb(255, 255, 255);
     --card-foreground: rgb(15, 23, 42);
- 
+
     --popover: rgb(255, 255, 255);
     --popover-foreground: rgb(15, 23, 42);
- 
+
     --primary: rgb(249, 199, 79);
     --primary-foreground: rgb(15, 23, 42);
- 
+
     --secondary: rgb(87, 117, 144);
     --secondary-foreground: rgb(255, 255, 255);
- 
+
     --muted: rgb(241, 245, 249);
     --muted-foreground: rgb(100, 116, 139);
- 
+
     --accent: rgb(241, 245, 249);
     --accent-foreground: rgb(15, 23, 42);
- 
+
     --destructive: rgb(239, 68, 68);
     --destructive-foreground: rgb(255, 255, 255);
- 
+
     --border: rgb(226, 232, 240);
     --input: rgb(226, 232, 240);
     --ring: rgb(15, 23, 42);
- 
+
     --radius: 0.5rem;
   }
- 
+
   .dark {
     --background: rgb(15, 23, 42);
     --foreground: rgb(255, 255, 255);
- 
+
     --card: rgb(15, 23, 42);
     --card-foreground: rgb(255, 255, 255);
- 
+
     --popover: rgb(15, 23, 42);
     --popover-foreground: rgb(255, 255, 255);
- 
+
     --primary: rgb(249, 199, 79);
     --primary-foreground: rgb(15, 23, 42);
- 
+
     --secondary: rgb(87, 117, 144);
     --secondary-foreground: rgb(255, 255, 255);
- 
+
     --muted: rgb(30, 41, 59);
     --muted-foreground: rgb(148, 163, 184);
- 
+
     --accent: rgb(30, 41, 59);
     --accent-foreground: rgb(255, 255, 255);
- 
+
     --destructive: rgb(127, 29, 29);
     --destructive-foreground: rgb(255, 255, 255);
- 
+
     --border: rgb(30, 41, 59);
     --input: rgb(30, 41, 59);
     --ring: rgb(212, 212, 212);
@@ -118,4 +118,219 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Map Marker Styles */
+.marker {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 20px; /* Slightly smaller marker */
+  height: 20px; /* Slightly smaller marker */
+  background-color: var(--primary);
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1; /* Ensure it's on top of map features */
+}
+
+.marker:hover,
+.marker.hovered {
+  transform: scale(1.3);
+  z-index: 10;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+  border: 3px solid white;
+}
+
+.marker::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.marker:hover::after,
+.marker.hovered::after {
+  width: 80%;
+  height: 80%;
+  opacity: 0.6;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.6;
+  }
+  70% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* Listing Card Hover Effects */
+.card.hovered {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  border-color: var(--primary);
+}
+
+.card {
+  transition: all 0.3s ease;
+}
+
+/* Popup styles - revised based on Mapbox docs */
+.mapboxgl-popup {
+  max-width: 280px;
+  z-index: 2; /* Higher than markers */
+  pointer-events: auto !important;
+}
+
+/* Remove animation keyframes and transitions */
+.mapboxgl-popup {
+  opacity: 1;
+  transform: none;
+}
+
+.mapboxgl-popup.active {
+  opacity: 1;
+  transform: none;
+}
+
+/* Improved styling for popup content */
+.mapboxgl-popup-content {
+  padding: 16px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  background-color: white;
+  font-family: var(--font-sans);
+  text-align: left;
+  overflow: hidden;
+}
+
+/* Better close button styling */
+.mapboxgl-popup-close-button {
+  font-size: 16px;
+  color: var(--muted-foreground);
+  padding: 8px;
+  right: 5px;
+  top: 5px;
+  border: none;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.mapboxgl-popup-close-button:hover {
+  color: var(--foreground);
+  background: transparent;
+}
+
+/* Tip styling - make it connect well with the marker */
+.mapboxgl-popup-tip {
+  border-top-color: white;
+  border-bottom-color: white;
+}
+
+/* Tip colors for different anchor positions */
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+  border-bottom-color: white;
+}
+
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: white;
+}
+
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+  border-right-color: white;
+}
+
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+  border-left-color: white;
+}
+
+.popup-content h3 {
+  margin-bottom: 4px;
+  color: var(--foreground);
+  margin-right: 10px; /* Space for close button */
+}
+
+.popup-category span {
+  display: inline-block;
+  font-weight: 500;
+  color: var(--primary-foreground);
+  background-color: var(--primary);
+}
+
+.popup-description {
+  margin: 8px 0;
+  color: var(--foreground);
+  line-height: 1.4;
+}
+
+.popup-details {
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+/* Add subtle shadow to make popup stand out */
+.mapboxgl-popup-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.view-details-btn {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-align: center;
+  width: 100%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.view-details-btn:hover {
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+}
+
+/* Popup when hovered state */
+.mapboxgl-popup.popup-hovered {
+  z-index: 3; /* Higher than other popups */
+}
+
+.mapboxgl-popup.popup-hovered .mapboxgl-popup-content {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border-color: var(--primary);
 }
